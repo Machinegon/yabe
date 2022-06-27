@@ -59,12 +59,12 @@ namespace System.IO.BACnet
         public BacnetEthernetProtocolTransport(string deviceName)
         {
 
-            this.deviceName = "\\Device\\NPF_"+deviceName;
+            this.deviceName = deviceName;
         }
 
         public BacnetAddressTypes Type { get { return BacnetAddressTypes.Ethernet; } }
 
-        public BacnetAddress GetBroadcastAddress() { return new BacnetAddress(BacnetAddressTypes.Ethernet, "FF-FF-FF-FF-FF-FF"); }
+        public BacnetAddress GetBroadcastAddress() { return new BacnetAddress(BacnetAddressTypes.Ethernet, "FF-FF-FF-FF-FF-FF", 65535); }
         public int HeaderLength { get { return 6 + 6 + 2 + 3; } }
         public BacnetMaxAdpu MaxAdpuLength { get { return BacnetMaxAdpu.MAX_APDU1476; } }
         public int MaxBufferLength { get { return 1500; } }
@@ -86,7 +86,7 @@ namespace System.IO.BACnet
             {
                 try
                 {
-                    var device = devices.Where(dev => dev.Interface.Name == deviceName).FirstOrDefault();
+                    var device = devices.Where(dev => dev.Interface.FriendlyName == deviceName).FirstOrDefault();
                     device.Open(DeviceMode.Normal, 1000);  // 1000 ms read timeout
                     return device;
                 }

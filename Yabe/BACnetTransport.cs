@@ -209,6 +209,9 @@ namespace System.IO.BACnet
 
                 try
                 {
+                    // restart data reception before the job is finish ... could be dangerous
+                    conn.BeginReceive(OnReceiveData, conn);
+
                     //verify message
                     BacnetAddress remote_address;
                     Convert((System.Net.IPEndPoint)ep, out remote_address);
@@ -259,7 +262,7 @@ namespace System.IO.BACnet
                 finally
                 {
                     //restart data receive
-                    conn.BeginReceive(OnReceiveData, conn);
+                    //conn.BeginReceive(OnReceiveData, conn);
                 }
             }
             catch (Exception ex)
@@ -855,7 +858,8 @@ namespace System.IO.BACnet
 
                         for (int i = 0; i < NbEntries; i++)
                         {
-                            long add = BitConverter.ToInt32(buffer, 4 + i * 10);
+                            byte[] Add = new byte[4];
+                            Array.Copy(buffer, 4 + i * 10, Add, 0, 4);
 
                             Array.Reverse(buffer, 8 + i * 10, 2);
                             ushort port = BitConverter.ToUInt16(buffer, 8 + i * 10);
@@ -864,7 +868,7 @@ namespace System.IO.BACnet
                             byte[] Mask = new byte[4];
                             Array.Copy(buffer, 10 + i * 10, Mask, 0, 4);
 
-                            Tuple<IPEndPoint, IPAddress> entry = new Tuple<IPEndPoint, IPAddress>(new IPEndPoint(new IPAddress(add), port), new IPAddress(Mask));
+                            Tuple<IPEndPoint, IPAddress> entry = new Tuple<IPEndPoint, IPAddress>(new IPEndPoint(new IPAddress(Add), port), new IPAddress(Mask));
                             Entries.Add(entry);
                         }
 

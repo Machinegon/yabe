@@ -29,6 +29,8 @@ using System.IO.BACnet;
 using System.IO.BACnet.Serialize;
 using SharpPcap;
 using SharpPcap.LibPcap;
+using System.Net.Sockets;
+using System.Net;
 
 namespace OfflineStackDebug
 {
@@ -43,6 +45,46 @@ namespace OfflineStackDebug
             bacnet_client.Start();
             ServiceToBeTested();          
         }
+
+        // To send raw udp activity
+        static void RawUdpTest()
+        {
+            PcapDevice pcap = new CaptureFileReaderDevice(@"..\..\EventNotification3.pcap");
+            RawCapture raw;
+
+            raw = pcap.GetNextPacket();
+
+            byte[] b = new byte[raw.Data.Length - 0x2a];
+
+            int UdpSize = (raw.Data[0x26] << 8) + raw.Data[0x27]; // to remove Ethernet padding if present
+            Array.Copy(raw.Data, 0x2a, b, 0, UdpSize - 8);
+
+            UdpClient u = new UdpClient();
+
+            u.Send(b, b.Length, "127.0.0.1", 47808);
+            Console.WriteLine("Event Sent");
+
+            IPEndPoint ep = null;
+            u.Receive(ref ep);
+            Console.WriteLine("receive");
+            raw = pcap.GetNextPacket();
+
+            b = new byte[raw.Data.Length - 0x2a];
+
+            UdpSize = (raw.Data[0x26] << 8) + raw.Data[0x27];
+            Array.Copy(raw.Data, 0x2a, b, 0, UdpSize - 8);
+
+            u.Send(b, b.Length, "127.0.0.1", 47808);
+            Console.WriteLine("Ack Sent");
+
+            for (; ; )
+            {
+                u.Receive(ref ep);
+                Console.WriteLine("receive");
+            }
+
+        }
+
 
         static void ServiceToBeTested()
         {

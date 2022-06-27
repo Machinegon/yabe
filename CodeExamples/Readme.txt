@@ -102,6 +102,9 @@ RaspberrySample
 	Ready with small modifications (Gpio) for Intel/Edison, Texas/BeagleBone, and a  
 	lot of Linux plateforms with Mono installed.
 
+RaspberryNetCore
+	The exact copy of RaspberrySample in a visual Studio NetCore ready project
+
 Enocean/Bacnet Gateway
 	A work done by Christopher Guenther, using AnotherStorageImplementation, 
 	is available at : http://sourceforge.net/projects/enocean-csharp/
@@ -119,3 +122,9 @@ Wheather2_to_Bacnet
 	Available data are : Temperature, Windspeed, Humidity, Pressure, Winddir, 
 	Weather Description, Sunset & Sunrise time, DewPoint & VaporPressure.
 	No weather forecast data.
+
+MultipleDevices
+	Based on AnotherStorageImplementation.
+	Shows how to run several devices, due to the Udp multisockets strategies used by 
+	Yabe core code. All devices share the same Udp Port 47808 for broadcast activities
+	and uses an exclusive socket for all others exchanges.

@@ -94,9 +94,9 @@ namespace BaCSharp
         // Only check the value range, work is after done by the overrided method
         public override void set2_PROP_PRESENT_VALUE(IList<BacnetValue> Value, byte WritePriority)
         {
-            uint newVal = (uint)Value[0].Value;
+            uint newVal = Convert.ToUInt32(Value[0].Value);
 
-            if ((newVal > 0) && (newVal <= m_PROP_NUMBER_OF_STATES))
+            if (((newVal > 0) && (newVal <= m_PROP_NUMBER_OF_STATES))||(Value[0].Value==null))
                 base.set2_PROP_PRESENT_VALUE(Value, WritePriority);
             else
                 ErrorCode_PropertyWrite=ErrorCodes.OutOfRange;
