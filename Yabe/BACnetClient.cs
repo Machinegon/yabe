@@ -51,6 +51,7 @@ namespace System.IO.BACnet
         private LastSegmentACK m_last_segment_ack = new LastSegmentACK();
         private bool m_force_window_size = false;
         private uint m_writepriority=0;
+        private int m_file_buffer_size = 256;
 
         public IBacnetTransport Transport { get { return m_client; } }
         public int Timeout { get { return m_timeout; } set { m_timeout = value; } }
@@ -61,6 +62,7 @@ namespace System.IO.BACnet
         public byte ProposedWindowSize { get { return m_proposed_window_size; } set { m_proposed_window_size = value; } }
         public bool ForceWindowSize { get { return m_force_window_size; } set { m_force_window_size = value; } }
         public bool DefaultSegmentationHandling { get { return m_default_segmentation_handling; } set { m_default_segmentation_handling = value; } }
+        public int FileBufferSize { get { return m_file_buffer_size; }  set { m_file_buffer_size = value; } }
 
         // These members allows to access undecoded buffer by the application
         // layer, when the basic undecoding process is not really able to do the job
@@ -1069,9 +1071,7 @@ namespace System.IO.BACnet
 
         public int GetFileBufferMaxSize()
         {
-            //6 should be the max_apdu_header_length for Confirmed (with segmentation)
-            //12 should be the max_atomic_write_file
-            return GetMaxApdu() - 18;
+            return m_file_buffer_size;
         }
 
         public bool WriteFileRequest(BacnetAddress adr, BacnetObjectId object_id, ref int position, int count, byte[] file_buffer, byte invoke_id = 0)

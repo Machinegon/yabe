@@ -140,5 +140,8 @@
     <Setting Name="Vertical_Object_Splitter_Orientation" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="FileBufferSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">256</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

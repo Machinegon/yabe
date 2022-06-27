@@ -2249,6 +2249,9 @@ namespace Yabe
                 BacnetObjectId object_id;
                 if (GetObjectLink(out comm, out adr, out object_id, BacnetObjectTypes.OBJECT_FILE) == false) return;
 
+                // Set buffer size property
+                comm.FileBufferSize = Properties.Settings.Default.FileBufferSize;
+
                 //where to store file?
                 SaveFileDialog dlg = new SaveFileDialog();
                 dlg.FileName = Properties.Settings.Default.GUI_LastFilename;
