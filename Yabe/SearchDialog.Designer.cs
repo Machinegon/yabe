@@ -68,6 +68,7 @@
             this.m_EthernetInterfaceCombo = new System.Windows.Forms.ComboBox();
             this.label11 = new System.Windows.Forms.Label();
             this.m_AddEthernetButton = new System.Windows.Forms.Button();
+            this.cbCapture = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.m_PortValue)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -175,6 +176,7 @@
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.cbCapture);
             this.groupBox2.Controls.Add(this.m_MaxInfoFramesValue);
             this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Controls.Add(this.m_MaxMasterValue);
@@ -533,6 +535,16 @@
             this.m_AddEthernetButton.UseVisualStyleBackColor = true;
             this.m_AddEthernetButton.Click += new System.EventHandler(this.m_AddEthernetButton_Click);
             // 
+            // cbCapture
+            // 
+            this.cbCapture.AutoSize = true;
+            this.cbCapture.Location = new System.Drawing.Point(204, 22);
+            this.cbCapture.Name = "cbCapture";
+            this.cbCapture.Size = new System.Drawing.Size(63, 17);
+            this.cbCapture.TabIndex = 16;
+            this.cbCapture.Text = "Capture";
+            this.cbCapture.UseVisualStyleBackColor = true;
+            // 
             // SearchDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -613,5 +625,6 @@
         private System.Windows.Forms.Label label15;
         public System.Windows.Forms.TextBox WhoLimitLow;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.CheckBox cbCapture;
     }
 }

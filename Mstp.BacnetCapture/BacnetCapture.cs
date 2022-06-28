@@ -123,7 +123,7 @@ namespace Mstp.BacnetCapture
                 else
                     Serial = new BacnetMstpProtocolTransport(comboPort.Text, Convert.ToInt32(comboSpeed.Text), -1);
 
-                Serial.RawMessageRecieved += new BacnetMstpProtocolTransport.RawMessageReceivedHandler(Serial_RawMessageRecieved);
+                Serial.RawMessageReceived += new BacnetMstpProtocolTransport.RawMessageHandler(Serial_RawMessageRecieved);
 
                 Serial.Start_SpyMode();
 

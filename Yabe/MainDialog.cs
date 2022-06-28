@@ -44,6 +44,7 @@ using System.Linq;
 using System.Collections;
 using System.Reflection;
 using ZedGraph;
+using Wireshark;
 
 namespace Yabe
 {
@@ -97,6 +98,8 @@ namespace Yabe
 
         private static DeviceStorage m_storage;
         private List<BacnetObjectDescription> objectsDescriptionExternal, objectsDescriptionDefault;
+        private WiresharkSender m_wireshark = new WiresharkSender("bacnet", 165);  // 165 = bacnet mstp
+        private BacnetMstpProtocolTransport.RawMessageHandler m_receivedHandler;
 
         YabeMainDialog yabeFrm; // Ref to itself, already affected, usefull for plugin developpmenet inside this code, before exporting it
 
@@ -822,11 +825,17 @@ namespace Yabe
             Application.Exit();
         }
 
+        void Transport_RawMessageRecieved(byte[] buffer, int offset, int lenght)
+        {
+            m_wireshark.SendToWireshark(buffer, offset, lenght);
+        }
+
         private void addDevicesearchToolStripMenuItem_Click(object sender, EventArgs e)
         {
             labelDrop1.Visible = labelDrop2.Visible = false;
 
-            SearchDialog dlg = new SearchDialog();
+            m_receivedHandler = new BacnetMstpProtocolTransport.RawMessageHandler(Transport_RawMessageRecieved);
+            SearchDialog dlg = new SearchDialog(m_receivedHandler);
             if (dlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
                 BacnetClient comm = dlg.Result;

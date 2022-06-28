@@ -1050,8 +1050,9 @@ namespace System.IO.BACnet
         #region " Sniffer mode "
 
         // Used in Sniffer only mode
-        public delegate void RawMessageReceivedHandler(byte[] buffer, int offset, int lenght);
-        public event RawMessageReceivedHandler RawMessageRecieved;
+        public delegate void RawMessageHandler(byte[] buffer, int offset, int lenght);
+        public event RawMessageHandler RawMessageReceived;
+        public event RawMessageHandler RawMessageSent;
 
         public void Start_SpyMode()
         {
@@ -1062,6 +1063,26 @@ namespace System.IO.BACnet
             th.IsBackground = true;
             th.Start();
 
+        }
+
+        private void copy_signal(ref byte[] buffer, int length, bool sent)
+        {
+            // Array copy
+            // after that it could be put asynchronously another time in the Main message loop
+            // without any problem
+            byte[] packet = new byte[length];
+            Array.Copy(buffer, 0, packet, 0, length);
+
+            // No need to use the thread pool, if the pipe is too slow
+            // frames task list will grow infinitly
+            if (sent)
+            {
+                RawMessageSent(packet, 0, length);
+            }
+            else
+            {
+                RawMessageReceived(packet, 0, length);
+            }
         }
 
         // Just Sniffer mode, no Bacnet activity generated here
@@ -1083,27 +1104,6 @@ namespace System.IO.BACnet
                     {
                         m_port = null;
                         return;
-                    }
-                    else if (status == GetMessageStatus.Good)
-                    {
-                        // frame event client ?
-                        if (RawMessageRecieved != null)
-                        {
-
-                            int length = msg_length + MSTP.MSTP_HEADER_LENGTH + (msg_length > 0 ? 2 : 0);
-
-                            // Array copy
-                            // after that it could be put asynchronously another time in the Main message loop
-                            // without any problem
-                            byte[] packet = new byte[length];
-                            Array.Copy(m_local_buffer, 0, packet, 0, length);
-
-                            // No need to use the thread pool, if the pipe is too slow
-                            // frames task list will grow infinitly
-                            RawMessageRecieved(packet, 0, length);
-                        }
-
-                        RemoveCurrentMessage(msg_length);
                     }
                 }
                 catch
@@ -1197,11 +1197,19 @@ namespace System.IO.BACnet
                 byte[] tmp_transmit_buffer = new byte[MSTP.MSTP_HEADER_LENGTH];
                 tx = MSTP.Encode(tmp_transmit_buffer, 0, frame.frame_type, frame.destination_address, (byte)m_TS, 0);
                 m_port.Write(tmp_transmit_buffer, 0, tx);
+                if(RawMessageSent != null)
+                {
+                    copy_signal(ref tmp_transmit_buffer, tx, true);
+                }
             }
             else
             {
                 tx = MSTP.Encode(frame.data, 0, frame.frame_type, frame.destination_address, (byte)m_TS, frame.data_length);
                 m_port.Write(frame.data, 0, tx);
+                if (RawMessageSent != null)
+                {
+                    copy_signal(ref frame.data, tx, true);
+                }
             }
             frame.send_mutex.Set();
 
@@ -1856,6 +1864,12 @@ namespace System.IO.BACnet
             }
 
             //signal frame event
+            if (RawMessageReceived != null) 
+            {
+                int length = msg_length + MSTP.MSTP_HEADER_LENGTH + (msg_length > 0 ? 2 : 0);
+                copy_signal(ref m_local_buffer, length, false);
+            }
+
             if (FrameRecieved != null)
             {
                 BacnetMstpFrameTypes _frame_type = frame_type;

@@ -40,12 +40,14 @@ namespace Yabe
     public partial class SearchDialog : Form
     {
         private BacnetClient m_result;
+        private BacnetMstpProtocolTransport.RawMessageHandler m_handler;
 
         public BacnetClient Result { get { return m_result; } }
 
-        public SearchDialog()
+        public SearchDialog(BacnetMstpProtocolTransport.RawMessageHandler handler)
         {
             InitializeComponent();
+            this.m_handler = handler;
 
             //find all serial ports
             string[] ports = System.IO.Ports.SerialPort.GetPortNames();
@@ -100,6 +102,7 @@ namespace Yabe
             try
             {
                 int com_number = 0;
+                bool capture = cbCapture.Checked;
                 if (m_SerialPortCombo.Text.Length >= 3) int.TryParse(m_SerialPortCombo.Text.Substring(3), out com_number);
                 BacnetMstpProtocolTransport transport;
                 if (com_number >= 1000)      //these are my special "pipe" com ports 
@@ -107,11 +110,21 @@ namespace Yabe
                 else
                     transport = new BacnetMstpProtocolTransport(m_SerialPortCombo.Text, (int)m_BaudValue.Value, (short)m_SourceAddressValue.Value, (byte)m_MaxMasterValue.Value, (byte)m_MaxInfoFramesValue.Value);
                 transport.StateLogging = Properties.Settings.Default.MSTP_LogStateMachine;
+                if (capture)
+                {
+                    transport.RawMessageReceived += m_handler;
+                    transport.RawMessageSent += m_handler;
+                }
                 m_result = new BacnetClient(transport, (int)m_TimeoutValue.Value, (int)m_RetriesValue.Value);
                 this.DialogResult = System.Windows.Forms.DialogResult.OK;
                 this.Close();
             }
             catch { }
+        }
+
+        private void Transport_RawMessageRecieved(byte[] buffer, int offset, int lenght)
+        {
+            throw new NotImplementedException();
         }
 
         private void m_AddPtpSerialButton_Click(object sender, EventArgs e)
@@ -193,6 +206,5 @@ namespace Yabe
             }
             return ips.ToArray();
         }
-
     }
 }
