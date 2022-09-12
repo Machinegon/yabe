@@ -2,9 +2,9 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Yabe"
-#define MyAppVersion "1.2.3"
+#define MyAppVersion "1.2.99"
 #define MyAppPublisher "Yabe Authors"
-#define MyAppURL "http://sourceforge.net/projects/yetanotherbacnetexplorer"
+#define MyAppURL "https://github.com/Machinegon/yabe"
 #define MyAppExeName "Yabe.exe"
 
 [Setup]
@@ -20,7 +20,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-LicenseFile=C:\Users\Fred\Dev\Yabe\trunk\Docs\MIT_license.txt
+LicenseFile=C:\code\github\yabe\Docs\MIT_license.txt
 OutputBaseFilename=SetupYabe_v{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
